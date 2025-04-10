@@ -3,7 +3,7 @@ from auth import Auth
 from pags.dashboard import Dashboard
 from pags.agendamentos import Agendamentos
 from pags.suporte import Suporte
-
+from database import DB_NAME
 # Tela principal para rodar o código, ela que faz a "Distribuição" para as outras páginas. Importante manter o controle do versionamento dessa página.
 
 st.set_page_config(page_title="Agendamentos", layout="centered")
@@ -31,7 +31,7 @@ class App:
         senha = st.text_input("Senha", type="password", placeholder="Digite sua senha")
 
         if st.button("Entrar"):
-            user = self.auth.login_user(email, senha)
+            user = self.auth.login(email, senha)
             if user:
                 user_id, nome, tipo = user
                 st.session_state["auth_user"] = {"id": user_id, "nome": nome, "email": email, "tipo": tipo}
@@ -44,6 +44,7 @@ class App:
     def show_dashboard(self):
         """Painel de navegação após login"""
         user_tipo = st.session_state["auth_user"]["tipo"]
+        usuario_id = st.session_state["auth_user"]["id"]
 
         # Exibe o nome do usuário logado
         st.sidebar.title(f"Bem-vindo, {st.session_state['auth_user']['nome']}!")
@@ -52,14 +53,15 @@ class App:
         if user_tipo == "admin":
             paginas = ["Dashboard", "Agendamentos", "Suporte"]
         else:
-            paginas = ["Dashboard", "Agendamentos", "Suporte"]
-
+             paginas = ["Dashboard", "Agendamentos", "Suporte"]  # Se quiser personalizar
+      
+        
         # Navegação entre as páginas usando radio buttons
         page = st.sidebar.radio("Navegação", paginas)
 
         # Controlando a navegação
         if page == "Dashboard":
-            Dashboard().show()
+            Dashboard(usuario_id).show()  # ✅ CORRIGIDO: agora passando o ID do usuário
         elif page == "Agendamentos":
             Agendamentos().show()
         elif page == "Suporte":

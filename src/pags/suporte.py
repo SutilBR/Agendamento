@@ -6,7 +6,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os
 from dotenv import load_dotenv
-from database import Database
+
 
 
 # Carrega variáveis do .env

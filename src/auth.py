@@ -1,35 +1,27 @@
 import sqlite3
 import hashlib
-from database import Database
+from database import DB_NAME
 
 # Código para garantir login e segurança dos usuarios
 
-class Auth:
-    def __init__(self):
-        self.db = Database()
 
+class Auth:
     def hash_senha(self, senha):
+        """Retorna o hash SHA-256 da senha"""
         return hashlib.sha256(senha.encode()).hexdigest()
 
-    def cadastrar_usuario(self, nome, email, senha, tipo="comum"):
-        """Cadastra um novo usuário no sistema"""
+    def login(self, email, senha):
+        """Autentica usuário e retorna os dados se válido"""
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
         senha_hash = self.hash_senha(senha)
-        try:
-            self.db.cursor.execute(
-                "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)",
-                (nome, email, senha_hash, tipo),
-            )
-            self.db.conn.commit()
-            return True
-        except sqlite3.IntegrityError:
-            return False
 
-    def login_user(self, email, senha):
-        """Realiza login e retorna as informações do usuário"""
-        senha_hash = self.hash_senha(senha)
-        self.db.cursor.execute(
-            "SELECT id, nome, tipo FROM usuarios WHERE email = ? AND senha = ?",
-            (email, senha_hash),
-        )
-        user = self.db.cursor.fetchone()
-        return user if user else None
+        cursor.execute("""
+            SELECT id, nome, tipo 
+            FROM usuarios 
+            WHERE email = ? AND senha = ?
+        """, (email, senha_hash))
+        
+        user = cursor.fetchone()
+        conn.close()
+        return user

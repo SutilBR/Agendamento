@@ -4,6 +4,7 @@ from database import Database
 import time
 from datetime import date
 import xml.etree.ElementTree as ET
+from database import DB_NAME
 
 # Essa tela é para o cadastro de agendamentos
 # Adicionar a leitura do xml em outra tabela com as infos do xml e foreing key do id
