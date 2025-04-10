@@ -27,6 +27,8 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 usuario_id INTEGER NOT NULL,
                 placa TEXT NOT NULL,
+                placa_carreta TEXT NOT NULL,
+                placa_carreta2 TEXT NOT NULL,
                 descricao TEXT NOT NULL,
                 data TEXT NOT NULL,
                 data_cadastro TEXT NOT NULL,
@@ -36,9 +38,27 @@ class Database:
                 nome_motorista TEXT NOT NULL,
                 telefone_motorista TEXT NOT NULL,
                 documento_motorista TEXT NOT NULL,
-                nome_arquivo TEXT NOT NULL,
-                nf_xml TEXT NOT NULL,
+                produto TEXT NOT NULL,
                 FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+            )
+        ''')
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS arquivos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                usuario_id INTEGER NOT NULL,
+                id_agendamento INTEGER NOT NULL,
+                chave_acesso TEXT NOT NULL,
+                numero_nota TEXT NOT NULL,
+                serie_nota TEXT NOT NULL,
+                produto_nota TEXT NOT NULL,
+                quantidade_nota TEXT NOT NULL,
+                exportador_nota TEXT NOT NULL,
+                emitente_nota TEXT NOT NULL,
+                retirada_nota TEXT NOT NULL,
+                transportador_nota TEXT NOT NULL,
+                entrega_nota TEXT NOT NULL,
+                info_cpl TEXT NOT NULL,
+                FOREIGN KEY (id_agendamento) REFERENCES agendamentos(id)
             )
         ''')
         self.conn.commit()

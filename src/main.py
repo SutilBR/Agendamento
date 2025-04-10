@@ -34,7 +34,7 @@ class App:
             user = self.auth.login_user(email, senha)
             if user:
                 user_id, nome, tipo = user
-                st.session_state["auth_user"] = {"id": user_id, "nome": nome, "tipo": tipo}
+                st.session_state["auth_user"] = {"id": user_id, "nome": nome, "email": email, "tipo": tipo}
                 st.session_state["page"] = "Dashboard"  # Página inicial após login
                 st.success(f"Bem-vindo, {nome}!")
                 st.rerun()  # Recarregar a página após login
@@ -52,7 +52,7 @@ class App:
         if user_tipo == "admin":
             paginas = ["Dashboard", "Agendamentos", "Suporte"]
         else:
-            paginas = ["Dashboard", "Agendamentos"]
+            paginas = ["Dashboard", "Agendamentos", "Suporte"]
 
         # Navegação entre as páginas usando radio buttons
         page = st.sidebar.radio("Navegação", paginas)
@@ -62,7 +62,7 @@ class App:
             Dashboard().show()
         elif page == "Agendamentos":
             Agendamentos().show()
-        elif page == "Suporte" and user_tipo == "admin":
+        elif page == "Suporte":
             Suporte().show()
 
         # Botão para sair da conta
