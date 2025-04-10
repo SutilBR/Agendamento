@@ -32,6 +32,8 @@ class Database:
                 descricao TEXT NOT NULL,
                 data TEXT NOT NULL,
                 data_cadastro TEXT NOT NULL,
+                data_inicio_descarga TEXT NULL,
+                data_fim_descarga TEXT NULL,
                 cliente TEXT NOT NULL,
                 terminal TEXT NOT NULL,
                 tipo_cms TEXT NOT NULL,
@@ -39,6 +41,7 @@ class Database:
                 telefone_motorista TEXT NOT NULL,
                 documento_motorista TEXT NOT NULL,
                 produto TEXT NOT NULL,
+                status TEXT NOT NULL CHECK(status IN ('ativo', 'cancelado', 'concluído')) DEFAULT 'ativo',
                 FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
             )
         ''')
@@ -75,6 +78,11 @@ class Database:
             print(f"Usuário {nome} criado com sucesso!")
         except sqlite3.IntegrityError:
             print(f"Erro: Email {email} já está em uso.")
-
+    def get_usernames(self):
+        select_users = "SELECT nome FROM usuarios"
+        self.cursor.execute(select_users)
+        users = self.cursor.fetchall()
+        users = [user[0] for user in users]
+        return users
     def close(self):
         self.conn.close()

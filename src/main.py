@@ -3,6 +3,7 @@ from auth import Auth
 from pags.dashboard import Dashboard
 from pags.agendamentos import Agendamentos
 from pags.suporte import Suporte
+from pags.historico import Historico
 
 # Tela principal para rodar o código, ela que faz a "Distribuição" para as outras páginas. Importante manter o controle do versionamento dessa página.
 
@@ -50,7 +51,7 @@ class App:
 
         # Menu de navegação
         if user_tipo == "admin":
-            paginas = ["Dashboard", "Agendamentos", "Suporte"]
+            paginas = ["Dashboard", "Agendamentos", "Suporte", "Histórico"]
         else:
             paginas = ["Dashboard", "Agendamentos", "Suporte"]
 
@@ -64,6 +65,8 @@ class App:
             Agendamentos().show()
         elif page == "Suporte":
             Suporte().show()
+        elif page == "Histórico":
+            Historico().show()
 
         # Botão para sair da conta
         if st.sidebar.button("Sair"):
