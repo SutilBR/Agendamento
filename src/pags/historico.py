@@ -1,11 +1,17 @@
 import streamlit as st
 from database import Database
+import pandas as pd
+import sqlite3
+from datetime import date
 # Precisa criar o historico dos agendamentos, aqui precisa aparecer TODOS os agendamentos feitos por esse usuario (lembrando, cada usuario pode ver apenas o agendamento de seu user)
+DB_NAME = "agendamentos.db"
 class Historico:
     def __init__(self):
         self.db = Database()
         self.user_id = st.session_state["auth_user"]["id"]
         self.user_tipo = st.session_state["auth_user"]["tipo"]
+        self.conn = sqlite3.connect(DB_NAME, check_same_thread=False)
+        self.cursor = self.conn.cursor()
         
     def tela_filtros(self):
         st.write("Selecione os filtros desejados para visualizar os agendamentos.")
@@ -29,15 +35,40 @@ class Historico:
         if st.button("Pesquisar"):
             self.filtrar_agendamentos()
     def filtrar_agendamentos(self):
-        selected_filters = f"SELECT * FROM agendamentos WHERE data_inicio_descarga = ? AND data_fim_descarga = ? and terminal = ? and tipo_cms = ? and status = ? and cliente = ? and produto = ? and placa = ? and nome_motorista = ? and documento_motorista = ? and usuario_id = ?"
-        params = (self.data_inicial_descarga, self.data_final_descarga, self.terminal, self.tipo_cms, self.status, self.clientes, self.produtos, self.placa, self.nome_motorista, self.documento_motorista, self.user_id)
-        query = "select * from agendamentos"
-        self.db.cursor.execute(query)
-        all_agendamentos = self.db.cursor.fetchall()
-        st.write(all_agendamentos)
+        if self.user_tipo == "admin":
+            query = "SELECT * FROM agendamentos WHERE 1=1"
+            params = []
+        else:
+            query = "SELECT * FROM agendamentos WHERE usuario_id = ?"
+            params = [self.user_id]
 
-        # self.db.cursor.execute(selected_filters, params)
-        # historico_agendamentos = self.db.cursor.fetchall()
-        # st.write(historico_agendamentos)
+        dict_query = {
+            "data_inicio_descarga": self.data_inicial_descarga.strftime("%Y-%m-%d") if isinstance(self.data_inicial_descarga, date) else self.data_inicial_descarga,
+            "data_fim_descarga": self.data_final_descarga.strftime("%Y-%m-%d") if isinstance(self.data_final_descarga, date) else self.data_final_descarga,
+            "terminal": self.terminal,
+            "tipo_cms": self.tipo_cms,
+            "status": self.status,
+            "clientes": self.clientes,
+            "produtos": self.produtos,
+            "placa": self.placa,
+            "nome_motorista": self.nome_motorista,
+            "documento_motorista": self.documento_motorista,
+        }
+
+        for coluna, valor in dict_query.items():
+            if valor and valor != "Todos":
+                if coluna == "data_inicio_descarga":
+                    query += " AND data_inicio_descarga >= ?"
+                    params.append(valor)
+
+                elif coluna == "data_fim_descarga":
+                    query += " AND (data_fim_descarga <= ? OR data_fim_descarga IS NULL)"
+                    params.append(valor)
+
+                else:
+                    query += f" AND {coluna} = ?"
+                    params.append(valor)
+        all_agendamentos = pd.read_sql(query, self.conn, params=tuple(params))
+        st.write(all_agendamentos)
     def exportar_excel(self):
         pass

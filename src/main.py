@@ -53,7 +53,7 @@ class App:
         if user_tipo == "admin":
             paginas = ["Dashboard", "Agendamentos", "Suporte", "Histórico"]
         else:
-            paginas = ["Dashboard", "Agendamentos", "Suporte"]
+            paginas = ["Dashboard", "Agendamentos", "Suporte", "Histórico"]
 
         # Navegação entre as páginas usando radio buttons
         page = st.sidebar.radio("Navegação", paginas)
