@@ -6,7 +6,6 @@ from pags.suporte import Suporte
 from pags.historico import Historico
 
 # Tela principal para rodar o código, ela que faz a "Distribuição" para as outras páginas. Importante manter o controle do versionamento dessa página.
-
 st.set_page_config(page_title="Agendamentos", layout="centered")
 
 class App:
