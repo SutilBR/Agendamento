@@ -70,5 +70,3 @@ class Historico:
                     params.append(valor)
         all_agendamentos = pd.read_sql(query, self.conn, params=tuple(params))
         st.write(all_agendamentos)
-    def exportar_excel(self):
-        pass
